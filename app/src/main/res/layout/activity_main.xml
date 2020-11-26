@@ -20,6 +20,7 @@
         android:id="@+id/EDT_Paginas_Web"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="www."
@@ -36,55 +37,10 @@
         app:layout_constraintBottom_toBottomOf="@+id/EDT_Paginas_Web"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
+        android:onClick="funcion_ir_pagina_web"
         app:layout_constraintStart_toEndOf="@+id/EDT_Paginas_Web"
         app:layout_constraintTop_toTopOf="@+id/EDT_Paginas_Web"
         app:layout_constraintVertical_bias="0.0" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/EDT_Paginas_Web">
-
-        <Button
-            android:id="@+id/B_As"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="as" />
-
-        <Button
-            android:id="@+id/B_Marca"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Marca" />
-
-        <Button
-            android:id="@+id/B_Personalizado"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Pers." />
-
-        <Button
-            android:id="@+id/B_Sport"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Sport" />
-
-        <Button
-            android:id="@+id/B_Google"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Google" />
-    </LinearLayout>
 
     <Switch
         android:id="@+id/S_App"
@@ -95,6 +51,7 @@
         app:layout_constraintEnd_toStartOf="@+id/S_Marcadores"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
+        android:onClick="funcion_Enapp"
         app:layout_constraintTop_toTopOf="@+id/S_Marcadores"
         app:layout_constraintVertical_bias="0.0" />
 
@@ -106,8 +63,9 @@
         app:layout_constraintEnd_toStartOf="@+id/S_Almacen"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="packed"
+        android:onClick="funcion_marcador"
         app:layout_constraintStart_toEndOf="@+id/S_App"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView" />
 
     <Switch
         android:id="@+id/S_Almacen"
@@ -190,5 +148,59 @@
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@+id/B_Preparar"
         app:layout_constraintTop_toTopOf="@+id/B_Preparar" />
+
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/EDT_Paginas_Web">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/B_As"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="funcion_as"
+                android:text="as" />
+
+            <Button
+                android:id="@+id/B_Marca"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="funcion_marca"
+                android:text="Marca" />
+
+            <Button
+                android:id="@+id/B_Personalizado"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="funcion_personalizada"
+                android:text="Pers." />
+
+            <Button
+                android:id="@+id/B_Sport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="funcion_sport"
+                android:text="Sport" />
+
+            <Button
+                android:id="@+id/B_Google"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="funcion_google"
+                android:text="Google" />
+        </LinearLayout>
+    </HorizontalScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,16 +1,21 @@
 package com.javierlinares.acceso_a_sistema;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
@@ -23,11 +28,11 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
 
-    Boolean conexion;
+    Boolean conexion, s_activo, v_numero;
     Button B_Bluethoon, B_Wifi;
     EditText ET_pagina_web;
-    String pagina_web, web_guardar;
-    Switch switch_on;
+    String pagina_web, web_guardar, numero;
+    Switch switch_on, s_almacen;
     WebView web;
 
 
@@ -38,10 +43,15 @@ public class MainActivity extends AppCompatActivity {
         ET_pagina_web = (EditText)findViewById(R.id.EDT_Paginas_Web);
         web = (WebView)findViewById(R.id.webView);
         switch_on = (Switch)findViewById(R.id.S_App);
+        s_almacen = (Switch)findViewById(R.id.S_Almacen);
         B_Bluethoon = (Button)findViewById(R.id.B_Bluethoon);
         B_Wifi = (Button)findViewById(R.id.B_Wifi);
+        numero = ((EditText)findViewById(R.id.EDT_Telefono)).getText().toString();
 
+        v_numero=false;
         conexion=false;
+        s_activo=false;
+        web_guardar = "";
 
         Toast.makeText(this, "Sin conexion", Toast.LENGTH_SHORT).show();
     }
@@ -75,12 +85,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void funcion_personalizada(View view) {
-        if (web_guardar.length()>0){
-            pagina_web = web_guardar;
-            Log.i("Web", "Se ha añadido la pagina web");
+        if(s_activo==true){
+            web_guardar = ET_pagina_web.getText().toString();
 
-            funcion_cargar_web();
-            Log.i("Web", "Carga de la pagina web");
+            if (web_guardar.length()>0){
+                pagina_web = web_guardar;
+                ET_pagina_web.setText(pagina_web);
+                Log.i("Web", "Se ha añadido la pagina web");
+
+                funcion_cargar_web();
+                Log.i("Web", "Carga de la pagina web");
+            }
+            else {
+                Toast.makeText(this, "No hay nada guardado", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else{
+            if (web_guardar.length()>0){
+                pagina_web = web_guardar;
+                ET_pagina_web.setText(pagina_web);
+                Log.i("Web", "Se ha añadido la pagina web");
+
+                funcion_cargar_web();
+                Log.i("Web", "Carga de la pagina web");
+            }
+            else {
+                Toast.makeText(this, "No hay nada guardado", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -121,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             //NO FUNCIONA
-            HJGJHG
+            //HJGJHG
             pagina_web = ((EditText)findViewById(R.id.EDT_Paginas_Web)).getText().toString();
             Uri webpage = Uri.parse("http://"+ pagina_web);
             Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
@@ -136,13 +167,24 @@ public class MainActivity extends AppCompatActivity {
 
     public void funcion_marcador(View view) {
         if (conexion==true){
-          ADFASDFS
+          //ADFASDFS
+        }
+    }
+
+
+    public void funcion_almacen(View view) {
+        if(view.getId()==R.id.S_Almacen) {
+            if (s_almacen.isChecked()) {
+                    s_activo = true;
+            } else {
+                s_activo = false;
+            }
         }
     }
 
 
     //NO FUNCIONA
-    fgdf
+    //fgdf
     public void funcion_wifi(View view) {
         ConnectivityManager connMgr =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -161,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (isMobileConn == true) {
             B_Wifi.setBackgroundColor(Color.RED);
+            conexion=true;
             Toast.makeText(this, "Estas conectado a los datos moviles", Toast.LENGTH_SHORT).show();
 
         }
@@ -175,23 +218,73 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void funcion_almacen(View view) {
-        if (switch_on.isChecked()){
-            if (ET_pagina_web.getText().toString().isEmpty()==true){
-                Toast.makeText(this, "Rellena el EditText", Toast.LENGTH_SHORT).show();
-            }
-            else{
-                web_guardar = ET_pagina_web.getText().toString();
-            }
 
-        }
-
-    }
 
 
                                 //APARTADO 2
 
 
+     public void funcion_preparar(View view) {
+         numero = ((EditText)findViewById(R.id.EDT_Telefono)).getText().toString();
+         pagina_web = ((EditText)findViewById(R.id.EDT_Paginas_Web)).getText().toString();
+         funcion_verificar_numero(numero);
+         if(v_numero==true){
+             Uri u_numero = Uri.parse(numero);
+             composeMmsMessage(pagina_web, u_numero);
+         }
+
+
+
+     }
+
+
+
+     public void funcion_enviar(View view) {
+         numero = ((EditText)findViewById(R.id.EDT_Telefono)).getText().toString();
+         pagina_web = ((EditText)findViewById(R.id.EDT_Paginas_Web)).getText().toString();
+
+         funcion_verificar_numero(numero);
+         if(v_numero==true) {
+             try {
+
+                 int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
+                 if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                     //Toast.makeText(this, "No tiene permiso", Toast.LENGTH_SHORT).show();
+                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, 225);
+                 } else {
+                     // Toast.makeText(this, "Ya tiene permiso", Toast.LENGTH_SHORT).show();
+                 }
+
+                 SmsManager mensaje = SmsManager.getDefault();
+                 mensaje.sendTextMessage(numero, null, pagina_web, null, null);
+                 Toast.makeText(this, "Mensaje enviado", Toast.LENGTH_SHORT).show();
+
+             } catch (Exception e) {
+                 Toast.makeText(this, "Mensaje no enviado", Toast.LENGTH_SHORT).show();
+             }
+         }
+     }
+
+
+    public void composeMmsMessage(String message, Uri attachment) {
+        Intent intent = new Intent(Intent.ACTION_SENDTO, attachment);
+        intent.putExtra("sms_body", message);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
+      public void funcion_verificar_numero(String numero){
+
+        if ( (numero.charAt(0)== '6' || numero.charAt(0)== '8') &&  numero.length()==9){
+            v_numero=true;
+
+        }
+        else {
+            v_numero=false;
+            Toast.makeText(this, "Numero Incorrecto", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
 
@@ -212,6 +305,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Tienes Bluethoon", Toast.LENGTH_SHORT).show();
         }
     }
+
 
 
 }

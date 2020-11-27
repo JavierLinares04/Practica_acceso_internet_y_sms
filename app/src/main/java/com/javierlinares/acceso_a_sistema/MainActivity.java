@@ -23,6 +23,7 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     EditText ET_pagina_web;
     String pagina_web, web_guardar, numero;
     Switch switch_on, s_almacen;
+    TextView m_enviado;
     WebView web;
 
 
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         B_Bluethoon = (Button)findViewById(R.id.B_Bluethoon);
         B_Wifi = (Button)findViewById(R.id.B_Wifi);
         numero = ((EditText)findViewById(R.id.EDT_Telefono)).getText().toString();
+        m_enviado = (TextView)findViewById(R.id.TV_Mensaje);
 
         v_numero=false;
         conexion=false;
@@ -62,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         web.loadUrl("http://"+ pagina_web);
     }
 
-                                    //APARTADO 1
+
 
     //FUNCION PARA AÑADIR UNA PAGINA WEB
     public void funcion_ir_pagina_web(View view) {
@@ -72,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+                                 //APARTADO 1
 
     //FUNCIONES DE BOTONES PREDEFINIDOS
     public void funcion_as(View view) {
@@ -151,8 +154,7 @@ public class MainActivity extends AppCompatActivity {
             funcion_cargar_web();
         }
         else {
-            //NO FUNCIONA
-            //HJGJHG
+           // NO FUNCIONA
             pagina_web = ((EditText)findViewById(R.id.EDT_Paginas_Web)).getText().toString();
             Uri webpage = Uri.parse("http://"+ pagina_web);
             Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
@@ -167,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void funcion_marcador(View view) {
         if (conexion==true){
-          //ADFASDFS
+           // PREGUNTAR QUE HAY QUE HACER
         }
     }
 
@@ -175,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
     public void funcion_almacen(View view) {
         if(view.getId()==R.id.S_Almacen) {
             if (s_almacen.isChecked()) {
-                    s_activo = true;
+                s_activo = true;
             } else {
                 s_activo = false;
             }
@@ -183,8 +185,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //NO FUNCIONA
-    //fgdf
+   
     public void funcion_wifi(View view) {
         ConnectivityManager connMgr =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -201,16 +202,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        if (isMobileConn == true) {
-            B_Wifi.setBackgroundColor(Color.RED);
-            conexion=true;
-            Toast.makeText(this, "Estas conectado a los datos moviles", Toast.LENGTH_SHORT).show();
-
-        }
-        else if (isWifiConn == true) {
+        if (isWifiConn == true) {
             B_Wifi.setBackgroundColor(Color.GREEN);
             conexion=true;
             Toast.makeText(this, "Estas conectado al wifi", Toast.LENGTH_SHORT).show();
+        }
+        else if (isMobileConn == true) {
+            B_Wifi.setBackgroundColor(Color.GREEN);
+            conexion=true;
+            Toast.makeText(this, "Estas conectado a los datos moviles", Toast.LENGTH_SHORT).show();
+
         }
         else {
             B_Wifi.setBackgroundColor(Color.RED);
@@ -225,6 +226,7 @@ public class MainActivity extends AppCompatActivity {
 
 
      public void funcion_preparar(View view) {
+        //NO FUNCIONA
          numero = ((EditText)findViewById(R.id.EDT_Telefono)).getText().toString();
          pagina_web = ((EditText)findViewById(R.id.EDT_Paginas_Web)).getText().toString();
          funcion_verificar_numero(numero);
@@ -258,6 +260,7 @@ public class MainActivity extends AppCompatActivity {
                  SmsManager mensaje = SmsManager.getDefault();
                  mensaje.sendTextMessage(numero, null, pagina_web, null, null);
                  Toast.makeText(this, "Mensaje enviado", Toast.LENGTH_SHORT).show();
+                 funcion_escribir_mensaje(pagina_web);
 
              } catch (Exception e) {
                  Toast.makeText(this, "Mensaje no enviado", Toast.LENGTH_SHORT).show();
@@ -265,14 +268,6 @@ public class MainActivity extends AppCompatActivity {
          }
      }
 
-
-    public void composeMmsMessage(String message, Uri attachment) {
-        Intent intent = new Intent(Intent.ACTION_SENDTO, attachment);
-        intent.putExtra("sms_body", message);
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        }
-    }
 
       public void funcion_verificar_numero(String numero){
 
@@ -283,6 +278,20 @@ public class MainActivity extends AppCompatActivity {
         else {
             v_numero=false;
             Toast.makeText(this, "Numero Incorrecto", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    public void funcion_escribir_mensaje(String mensaje){
+        m_enviado.setText("Mensaje enviado: "+ mensaje);
+    }
+
+    public void composeMmsMessage(String message, Uri attachment) {
+        Intent intent = new Intent(Intent.ACTION_SENDTO, attachment);
+        intent.putExtra("sms_body", message);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+            funcion_escribir_mensaje(message);
         }
     }
 

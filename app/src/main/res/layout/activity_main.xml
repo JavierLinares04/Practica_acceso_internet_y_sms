@@ -221,14 +221,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/EDT_Mensaje"
+            <TextView
+                android:id="@+id/TV_Mensaje"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Mensaje" />
-
+                android:text="Mensaje enviado: " />
         </LinearLayout>
     </ScrollView>
 

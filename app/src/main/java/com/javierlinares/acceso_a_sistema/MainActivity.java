@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     Button B_Bluethoon, B_Wifi;
     EditText ET_pagina_web;
     String pagina_web, web_guardar, numero;
-    Switch switch_on, s_almacen;
+    Switch switch_on, s_almacen, marcador_on;
     TextView m_enviado;
     WebView web;
 
@@ -45,39 +45,49 @@ public class MainActivity extends AppCompatActivity {
         ET_pagina_web = (EditText)findViewById(R.id.EDT_Paginas_Web);
         web = (WebView)findViewById(R.id.webView);
         switch_on = (Switch)findViewById(R.id.S_App);
+        marcador_on = (Switch)findViewById(R.id.S_Marcadores);
         s_almacen = (Switch)findViewById(R.id.S_Almacen);
         B_Bluethoon = (Button)findViewById(R.id.B_Bluethoon);
         B_Wifi = (Button)findViewById(R.id.B_Wifi);
         numero = ((EditText)findViewById(R.id.EDT_Telefono)).getText().toString();
         m_enviado = (TextView)findViewById(R.id.TV_Mensaje);
 
-        v_numero=false;
-        conexion=false;
-        s_activo=false;
+        v_numero = false;
+        conexion = false;
+        s_activo = false;
         web_guardar = "";
+
 
         Toast.makeText(this, "Sin conexion", Toast.LENGTH_SHORT).show();
     }
 
+
+    //FUNCION PARA CARGAR UNA PAGINA WEB
     private void funcion_cargar_web() {
-        pagina_web = ((EditText)findViewById(R.id.EDT_Paginas_Web)).getText().toString();
-        web.setWebViewClient(new WebViewClient());
-        web.loadUrl("http://"+ pagina_web);
-    }
 
-
-
-    //FUNCION PARA AÑADIR UNA PAGINA WEB
-    public void funcion_ir_pagina_web(View view) {
-        if(conexion==true){
-            funcion_cargar_web();
+        if (conexion == true){
+            pagina_web = ((EditText)findViewById(R.id.EDT_Paginas_Web)).getText().toString();
+            web.setWebViewClient(new WebViewClient());
+            web.loadUrl("http://" + pagina_web);
+            Toast.makeText(this, "Pagina mostrada", Toast.LENGTH_SHORT).show();
         }
 
     }
 
+
+
+
+
+
                                  //APARTADO 1
 
     //FUNCIONES DE BOTONES PREDEFINIDOS
+
+    public void funcion_ir_pagina_web(View view) {
+            funcion_cargar_web();
+    }
+
+
     public void funcion_as(View view) {
         pagina_web = "www.as.com";
         ET_pagina_web.setText(pagina_web);
@@ -154,7 +164,6 @@ public class MainActivity extends AppCompatActivity {
             funcion_cargar_web();
         }
         else {
-           // NO FUNCIONA
             pagina_web = ((EditText)findViewById(R.id.EDT_Paginas_Web)).getText().toString();
             Uri webpage = Uri.parse("http://"+ pagina_web);
             Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
@@ -169,7 +178,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void funcion_marcador(View view) {
         if (conexion==true){
-           // PREGUNTAR QUE HAY QUE HACER
+            if(marcador_on.isChecked()){
+                Toast.makeText(this, "www.as.com, www.marca.com, www.sport.com, www.google.com", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(this, ""+pagina_web, Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 
@@ -185,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-   
+
     public void funcion_wifi(View view) {
         ConnectivityManager connMgr =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -231,14 +246,10 @@ public class MainActivity extends AppCompatActivity {
          pagina_web = ((EditText)findViewById(R.id.EDT_Paginas_Web)).getText().toString();
          funcion_verificar_numero(numero);
          if(v_numero==true){
-             Uri u_numero = Uri.parse(numero);
+             Uri u_numero = Uri.parse("smsto:" +numero);
              composeMmsMessage(pagina_web, u_numero);
          }
-
-
-
      }
-
 
 
      public void funcion_enviar(View view) {
@@ -247,24 +258,39 @@ public class MainActivity extends AppCompatActivity {
 
          funcion_verificar_numero(numero);
          if(v_numero==true) {
-             try {
+             Log.i("NUMERO", "NUEMRO VERIFICADO " + numero);
 
-                 int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
-                 if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                     //Toast.makeText(this, "No tiene permiso", Toast.LENGTH_SHORT).show();
-                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, 225);
-                 } else {
-                     // Toast.makeText(this, "Ya tiene permiso", Toast.LENGTH_SHORT).show();
+             try{
+                 // en verde, código para añadir
+                 Log.i("SMS", "PEDIR PERMISO");
+                 int  permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
+                 int  permissionCheck2 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
+
+
+                 if(permissionCheck != PackageManager.PERMISSION_GRANTED){
+                     Toast.makeText(this, "No tiene permiso", Toast.LENGTH_SHORT).show();
+                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS},225);
+                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE},225);
                  }
-
+                 else{
+                      Toast.makeText(this, "Ya tiene permiso", Toast.LENGTH_SHORT).show();
+                     Log.i("SMS", "FINAL DE PERDIR PERMISO");
+                 }
+                 // en rojo, código de SmsManager, y solicitud de envío
+                 Log.i("SMS", "Inicio de SMS Manager");
                  SmsManager mensaje = SmsManager.getDefault();
+                 Log.i("SMS", "Inicio de sendTextMessage");
                  mensaje.sendTextMessage(numero, null, pagina_web, null, null);
                  Toast.makeText(this, "Mensaje enviado", Toast.LENGTH_SHORT).show();
+
                  funcion_escribir_mensaje(pagina_web);
 
-             } catch (Exception e) {
+             }catch(Exception e){
+                 Log.i("Excepcion", "EXCEPCION:  " + e.getMessage());
+                 e.getMessage();
                  Toast.makeText(this, "Mensaje no enviado", Toast.LENGTH_SHORT).show();
              }
+
          }
      }
 
@@ -273,7 +299,6 @@ public class MainActivity extends AppCompatActivity {
 
         if ( (numero.charAt(0)== '6' || numero.charAt(0)== '8') &&  numero.length()==9){
             v_numero=true;
-
         }
         else {
             v_numero=false;
@@ -286,12 +311,17 @@ public class MainActivity extends AppCompatActivity {
         m_enviado.setText("Mensaje enviado: "+ mensaje);
     }
 
+
+
     public void composeMmsMessage(String message, Uri attachment) {
         Intent intent = new Intent(Intent.ACTION_SENDTO, attachment);
         intent.putExtra("sms_body", message);
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
             funcion_escribir_mensaje(message);
+        }
+        else {
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
         }
     }
 
